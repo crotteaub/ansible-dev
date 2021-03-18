@@ -1,0 +1,29 @@
+---
+- name: Day4 Challenge
+  hosts: planetexpress  
+  #  gather_facts: false
+
+  vars:
+    astronomyDir: "astronomy"
+
+  vars_prompt:
+    - name: ansible_ssh_pass
+      prompt: "What is ssh password?"
+      private: yes
+
+  tasks:
+    - name: Setup SSH keys
+      become: yes
+      authorized_key:
+        validate_certs: no
+        user: "{{ ansible_user }}"
+        state: present
+        manage_dir: yes
+        key: "{{ lookup('file', '/home/student/.ssh/id_rsa.pub') }}"
+      when: ansible_distribution == "Ubuntu"
+
+
+    - name: Create astronomy dir
+      file:
+        path: "/home/{{ ansible_user }}/astronomy/"
+        state: directory
